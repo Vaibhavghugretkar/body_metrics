@@ -18,6 +18,7 @@ const Register = () => {
     confirmPassword: "",
     agreeTerms: false,
     gender: "",
+    userType: "Standard",
   });
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -65,12 +66,18 @@ const Register = () => {
           username: formData.name,
           email: formData.email,
           password: formData.password,
-          gender: formData.gender || "prefer-not-to-say",
+          gender: formData.gender,
+          userType: formData.userType,
         },
         { withCredentials: true }
       );
       login(res.data.user);
-      navigate("/dashboard");
+      // Always use the userType from the backend response for redirect
+      if (res.data.user && res.data.user.userType === "Business") {
+        navigate("/business-dashboard");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (err) {
       setError(
         err.response?.data?.message || err.message || "Registration failed"
@@ -211,6 +218,22 @@ const Register = () => {
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
                 <option value="Other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="userType" className="sr-only">
+                Account Type
+              </label>
+              <select
+                id="userType"
+                name="userType"
+                required
+                value={formData.userType}
+                onChange={handleChange}
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-[#d888bb] focus:border-[#d888bb] focus:z-10 sm:text-sm"
+              >
+                <option value="Standard">Standard User</option>
+                <option value="Business">Business</option>
               </select>
             </div>
           </div>

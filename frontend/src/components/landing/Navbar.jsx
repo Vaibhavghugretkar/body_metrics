@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { Menu, X } from "lucide-react"
-
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
@@ -38,8 +37,8 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
           <div className="flex items-center">
-            <span className="text-2xl font-bold bg-gradient-to-r from-[#ffa8b8] to-[#d888bb] text-transparent bg-clip-text">
-              SizeFit AI
+            <span className="text-2xl font-bold samarkan-text bg-gradient-to-r from-[#ffa8b8] to-[#d888bb] text-transparent bg-clip-text">
+              Sarvastara
             </span>
           </div>
 

@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 
 const createToken = (user) => {
   return jwt.sign(
-    { id: user._id, username: user.username },
+    { id: user._id, username: user.username, type: user.userType },
     process.env.JWT_SECRET,
     { expiresIn: "7d" }
   );
@@ -11,11 +11,26 @@ const createToken = (user) => {
 
 export const signup = async (req, res) => {
   try {
-    const { username, email, password, gender } = req.body;
+    const { username, email, password, gender, userType } = req.body;
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser)
       return res.status(400).json({ message: "User already exists" });
-    const user = await User.create({ username, email, password, gender });
+    const user = await User.create({
+      username,
+      email,
+      password,
+      gender,
+      userType,
+    });
+
+    if (userType === "Business") {
+      const Company = (await import("../models/companyModel.js")).default;
+      await Company.create({
+        name: username,
+        user: user._id,
+        products: [],
+      });
+    }
     const token = createToken(user);
     res.cookie("token", token, {
       httpOnly: true,
@@ -28,6 +43,7 @@ export const signup = async (req, res) => {
         username: user.username,
         email: user.email,
         gender: user.gender,
+        userType: user.userType,
       },
     });
   } catch (err) {
@@ -55,6 +71,7 @@ export const login = async (req, res) => {
         username: user.username,
         email: user.email,
         gender: user.gender,
+        userType: user.userType,
       },
     });
   } catch (err) {
