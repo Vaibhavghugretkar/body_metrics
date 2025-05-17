@@ -6,10 +6,9 @@ const MeasurementSummary = () => {
   const { latestMeasurements, previousMeasurements } = useMeasurements()
 
   const measurementTypes = [
-    { name: "Chest", key: "chest", unit: "cm" },
-    { name: "Waist", key: "waist", unit: "cm" },
-    { name: "Hips", key: "hips", unit: "cm" },
-    { name: "Thighs", key: "thighs", unit: "cm" },
+    { name: "Shirt Size", key: "shirtSize" },
+    { name: "Pant Size", key: "pantSize" },
+    { name: "Shoe Size", key: "shoeSize" },
   ]
 
   const getChange = (current, previous, key) => {
@@ -24,7 +23,7 @@ const MeasurementSummary = () => {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {measurementTypes.map((type) => {
         const change = getChange(latestMeasurements, previousMeasurements, type.key)
         return (
@@ -33,19 +32,23 @@ const MeasurementSummary = () => {
               <h3 className="text-lg font-medium text-gray-900">{type.name}</h3>
               <div className="mt-1 flex items-baseline">
                 <p className="text-2xl font-semibold text-gray-900">
-                  {latestMeasurements?.[type.key]?.toFixed(1) || "–"} {type.unit}
+                  {latestMeasurements?.[type.key] || "–"}
                 </p>
                 {latestMeasurements && previousMeasurements && (
                   <p
-                    className={`ml-2 flex items-center text-sm ${change.isPositive ? "text-red-600" : "text-green-600"}`}
+                    className={`ml-2 flex items-center text-sm ${
+                      change.isPositive ? "text-red-600" : "text-green-600"
+                    }`}
                   >
                     {change.isPositive ? (
                       <ArrowUp className="self-center flex-shrink-0 h-4 w-4 text-red-500" />
                     ) : (
                       <ArrowDown className="self-center flex-shrink-0 h-4 w-4 text-green-500" />
                     )}
-                    <span className="sr-only">{change.isPositive ? "Increased" : "Decreased"} by</span>
-                    {change.value} {type.unit}
+                    <span className="sr-only">
+                      {change.isPositive ? "Increased" : "Decreased"} by
+                    </span>
+                    {change.value}
                   </p>
                 )}
               </div>

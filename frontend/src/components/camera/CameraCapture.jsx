@@ -12,20 +12,37 @@ const CameraCapture = ({ onCapture, onError }) => {
   const [capturedImage, setCapturedImage] = useState(null)
   const [poseFeedback, setPoseFeedback] = useState(null)
 
+  // Start the camera when capturing state changes
   useEffect(() => {
-    return () => {
-      if (stream) {
-        stream.getTracks().forEach((track) => track.stop())
-      }
+    if (isCapturing) {
+      startCamera()
+    } else {
+      stopCamera()
     }
-  }, [stream])
+    return () => stopCamera()
+  }, [isCapturing])
 
   const startCamera = async () => {
     try {
+      console.log("Starting Camera...")
+
+      // Request access to the camera
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
       })
+
+      // Check if the video element exists
+      if (!videoRef.current) {
+        console.warn("Video element is not ready!")
+        return
+      }
+
       videoRef.current.srcObject = mediaStream
+      videoRef.current.onloadedmetadata = () => {
+        console.log("Metadata loaded, playing video...")
+        videoRef.current.play()
+      }
+
       setStream(mediaStream)
       setIsCapturing(true)
 
@@ -45,7 +62,15 @@ const CameraCapture = ({ onCapture, onError }) => {
       }, 2000)
     } catch (err) {
       console.error("Error accessing camera:", err)
-      onError && onError("Could not access camera. Please check permissions.")
+      if (err.name === "NotAllowedError") {
+        onError && onError("Camera access was denied. Please enable permissions.")
+      } else if (err.name === "NotFoundError") {
+        onError && onError("No camera found. Please connect a camera.")
+      } else if (err.name === "OverconstrainedError") {
+        onError && onError("Camera resolution not supported. Try lowering the resolution.")
+      } else {
+        onError && onError("Could not access camera. Please check permissions.")
+      }
     }
   }
 
@@ -53,7 +78,7 @@ const CameraCapture = ({ onCapture, onError }) => {
     if (stream) {
       stream.getTracks().forEach((track) => track.stop())
     }
-    setIsCapturing(false)
+    setStream(null)
     setPoseFeedback(null)
   }
 
@@ -71,7 +96,7 @@ const CameraCapture = ({ onCapture, onError }) => {
 
     const imageDataUrl = canvas.toDataURL("image/png")
     setCapturedImage(imageDataUrl)
-    stopCamera()
+    setIsCapturing(false)
 
     // Simulate processing delay
     setTimeout(() => {
@@ -81,7 +106,7 @@ const CameraCapture = ({ onCapture, onError }) => {
 
   const retakeImage = () => {
     setCapturedImage(null)
-    startCamera()
+    setIsCapturing(true)
   }
 
   return (
@@ -94,18 +119,20 @@ const CameraCapture = ({ onCapture, onError }) => {
               autoPlay
               playsInline
               className="w-full h-auto"
-              onCanPlay={() => videoRef.current.play()}
+              onLoadedMetadata={() => videoRef.current && videoRef.current.play()}
             />
             {poseFeedback && (
               <div
-                className={`absolute bottom-4 left-0 right-0 mx-auto w-5/6 p-2 rounded-md text-center text-white ${poseFeedback.includes("Good") ? "bg-green-500" : "bg-blue-500"}`}
+                className={`absolute bottom-4 left-0 right-0 mx-auto w-5/6 p-2 rounded-md text-center text-white ${
+                  poseFeedback.includes("Good") ? "bg-green-500" : "bg-blue-500"
+                }`}
               >
                 {poseFeedback}
               </div>
             )}
           </>
         ) : capturedImage ? (
-          <img src={capturedImage || "/placeholder.svg"} alt="Captured" className="w-full h-auto" />
+          <img src={capturedImage} alt="Captured" className="w-full h-auto" />
         ) : (
           <div className="flex items-center justify-center h-80 bg-gray-200">
             <Camera className="h-16 w-16 text-gray-400" />
@@ -117,7 +144,7 @@ const CameraCapture = ({ onCapture, onError }) => {
 
       <div className="mt-4 flex space-x-4">
         {!isCapturing && !capturedImage && (
-          <Button onClick={startCamera}>
+          <Button onClick={() => setIsCapturing(true)}>
             <Camera className="mr-2 h-4 w-4" />
             Start Camera
           </Button>
@@ -144,7 +171,7 @@ const CameraCapture = ({ onCapture, onError }) => {
         )}
 
         {isCapturing && (
-          <Button onClick={stopCamera} variant="outline">
+          <Button onClick={() => setIsCapturing(false)} variant="outline">
             <X className="mr-2 h-4 w-4" />
             Cancel
           </Button>
