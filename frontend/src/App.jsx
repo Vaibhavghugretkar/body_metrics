@@ -11,6 +11,7 @@ import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Landing from "./pages/Landing";
+import BusinessDashboard from "./pages/BusinessDashboard";
 import { useUser } from "./context/UserContext";
 import { useEffect } from "react";
 import axios from "axios";
@@ -18,7 +19,7 @@ import { Navigate, useLocation } from "react-router-dom";
 
 const HOST = import.meta.env.VITE_BACKEND_URL;
 
-function ProtectedRoute({ children }) {
+function ProtectedRoute({ children, businessOnly = false, userOnly = false }) {
   const { user, login } = useUser();
   const location = useLocation();
   const [loading, setLoading] = React.useState(true);
@@ -26,15 +27,12 @@ function ProtectedRoute({ children }) {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // Debug: Check if cookies are being sent
         const res = await axios.get(`${HOST}/auth/profile`, {
           withCredentials: true,
         });
         if (res.data.user) login(res.data.user);
-      } catch (err) {
-        // Optionally log error for debugging
-        // console.error('Auth check failed:', err);
-      } finally {
+      } catch {}
+      finally {
         setLoading(false);
       }
     };
@@ -44,6 +42,8 @@ function ProtectedRoute({ children }) {
 
   if (loading) return null;
   if (!user) return <Navigate to="/login" state={{ from: location }} replace />;
+  if (businessOnly && user.userType !== "Business") return <Navigate to="/dashboard" replace />;
+  if (userOnly && user.userType === "Business") return <Navigate to="/business-dashboard" replace />;
   return children;
 }
 
@@ -59,18 +59,26 @@ function App() {
         <Route
           path="/dashboard"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute userOnly>
               <Layout />
             </ProtectedRoute>
           }
         >
-          <Route index element={<Dashboard/>} />
+          <Route index element={<Dashboard />} />
           <Route path="capture" element={<MeasurementCapture />} />
           <Route path="history" element={<History />} />
           <Route path="recommendations" element={<Recommendations />} />
           <Route path="profile" element={<Profile />} />
           <Route path="settings" element={<Settings />} />
         </Route>
+        <Route
+          path="/business-dashboard"
+          element={
+            <ProtectedRoute businessOnly>
+              <BusinessDashboard />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   );

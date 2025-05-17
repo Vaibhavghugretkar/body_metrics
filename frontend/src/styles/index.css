@@ -23,6 +23,11 @@ body {
   transform: translateY(25px);
 }
 
+.samarkan-text {
+  font-family: 'Samarkan', sans-serif;
+  font-size: 2rem;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
