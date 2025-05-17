@@ -26,19 +26,20 @@ function ProtectedRoute({ children }) {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        // Debug: Check if cookies are being sent
         const res = await axios.get(`${HOST}/auth/profile`, {
           withCredentials: true,
         });
         if (res.data.user) login(res.data.user);
-      } catch {
-        // not authenticated
+      } catch (err) {
+        // Optionally log error for debugging
+        // console.error('Auth check failed:', err);
       } finally {
         setLoading(false);
       }
     };
     if (!user) checkAuth();
     else setLoading(false);
-    // eslint-disable-next-line
   }, []);
 
   if (loading) return null;
@@ -70,14 +71,6 @@ function App() {
           <Route path="profile" element={<Profile />} />
           <Route path="settings" element={<Settings />} />
         </Route>
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
       </Routes>
     </Router>
   );
