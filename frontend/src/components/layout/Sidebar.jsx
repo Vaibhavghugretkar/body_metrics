@@ -8,12 +8,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   const { user, logout } = useUser()
 
   const navItems = [
-    { name: "Dashboard", to: "/", icon: LayoutDashboard },
-    { name: "Capture", to: "/capture", icon: Camera },
-    { name: "History", to: "/history", icon: History },
-    { name: "Recommendations", to: "/recommendations", icon: Lightbulb },
-    { name: "Profile", to: "/profile", icon: User },
-    { name: "Settings", to: "/settings", icon: Settings },
+    { name: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
+    { name: "Capture", to: "/dashboard/capture", icon: Camera },
+    { name: "History", to: "/dashboard/history", icon: History },
+    { name: "Recommendations", to: "/dashboard/recommendations", icon: Lightbulb },
+    { name: "Profile", to: "/dashboard/profile", icon: User },
+    { name: "Settings", to: "/dashboard/settings", icon: Settings },
   ]
 
   return (
@@ -30,6 +30,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               <NavLink
                 key={item.name}
                 to={item.to}
+                end={item.to === "/dashboard"}
                 className={({ isActive }) =>
                   `flex items-center px-4 py-2 text-sm font-medium rounded-md ${
                     isActive
