@@ -17,11 +17,16 @@ const MeasurementChart = () => {
 
     const ctx = chartRef.current.getContext("2d")
 
+    // Filter out invalid measurements
+    const validHistory = Array.isArray(measurementHistory)
+      ? measurementHistory.filter(m => m && m.date)
+      : []
+
     // Extract dates and measurements
-    const dates = measurementHistory.map((m) => new Date(m.date).toLocaleDateString())
-    const chestData = measurementHistory.map((m) => m.chest)
-    const waistData = measurementHistory.map((m) => m.waist)
-    const hipsData = measurementHistory.map((m) => m.hips)
+    const dates = validHistory.map((m) => new Date(m.date).toLocaleDateString())
+    const chestData = validHistory.map((m) => m.chest)
+    const waistData = validHistory.map((m) => m.waist)
+    const hipsData = validHistory.map((m) => m.hips)
 
     chartInstance.current = new Chart(ctx, {
       type: "line",
@@ -68,7 +73,7 @@ const MeasurementChart = () => {
               display: true,
               text: "Measurement (cm)",
             },
-            min: Math.min(...[...chestData, ...waistData, ...hipsData]) * 0.9,
+            min: Math.min(...[...chestData, ...waistData, ...hipsData].filter(v => typeof v === "number")) * 0.9,
           },
         },
       },

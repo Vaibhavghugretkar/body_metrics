@@ -5,15 +5,18 @@ const measurementSchema = new mongoose.Schema({
   date: { type: Date, default: Date.now },
   measurements: [
     {
-      timestamp: { type: Date, default: Date.now },  // Capture date for each measurement
+      timestamp: { type: Date, default: Date.now },  
+      ankle: { type: Number, required: true },
+      arm_length: { type: Number, required: true },
+      belly: { type: Number, required: true },
       chest: { type: Number, required: true },
-      waist: { type: Number, required: true },
-      hips: { type: Number, required: true },
       height: { type: Number, required: true },
-      weight: { type: Number, required: true },
+      hips: { type: Number },
       neck: { type: Number },
-      thighs: { type: Number },
-      arms: { type: Number },
+      shoulder: { type: Number },
+      thigh: { type: Number },
+      waist: { type: Number },
+      wrist: { type: Number },
       bmi: { type: Number },
       bodyType: { type: String, enum: ['Ectomorph', 'Mesomorph', 'Endomorph'] },
       units: {
@@ -27,3 +30,8 @@ const measurementSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 export default mongoose.model('Measurement', measurementSchema);
+
+
+
+
+  

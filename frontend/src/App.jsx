@@ -64,7 +64,7 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Dashboard />} />
+          <Route index element={<Dashboard/>} />
           <Route path="capture" element={<MeasurementCapture />} />
           <Route path="history" element={<History />} />
           <Route path="recommendations" element={<Recommendations />} />

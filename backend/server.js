@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes.js";
 import measurementRoutes from "./routes/measurementRoutes.js";
+import cameraRoutes from "./routes/cameraRoutes.js"
 import connectDB from "./config/db.js";
 
 dotenv.config();
@@ -23,6 +24,7 @@ connectDB();
 
 app.use("/api/auth", authRoutes);
 app.use("/api/measurements", measurementRoutes);
+app.use("/api/camera", cameraRoutes);
 
 app.get("/", (req, res) => {
   res.send("Body Metrics API Running");

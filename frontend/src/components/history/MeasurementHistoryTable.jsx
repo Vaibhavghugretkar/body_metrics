@@ -1,14 +1,30 @@
 "use client"
 
-import React from "react"
+import React, { useState, useEffect } from "react"
 import { ChevronDown, ChevronUp, Trash2 } from "lucide-react"
 import Card from "../ui/Card"
-import { useMeasurements } from "../../context/MeasurementContext"
+import axios from "axios"
 
 const MeasurementHistoryTable = () => {
-  const { measurementHistory, deleteMeasurement } = useMeasurements()
-  const [sortField, setSortField] = React.useState("date")
-  const [sortDirection, setSortDirection] = React.useState("desc")
+  const [measurementHistory, setMeasurementHistory] = useState([])
+  const [sortField, setSortField] = useState("date")
+  const [sortDirection, setSortDirection] = useState("desc")
+
+  // Fetch measurements from the API
+  const fetchMeasurements = async () => {
+    try {
+      console.log("Fetching measurements...")
+      const response = await axios.get("http://localhost:5000/api/measurements", { withCredentials: true })
+      console.log("Measurements fetched:", response.data)
+      setMeasurementHistory(response.data.measurements || [])
+    } catch (error) {
+      console.error("Failed to fetch measurements:", error)
+    }
+  }
+
+  useEffect(() => {
+    fetchMeasurements()
+  }, [])
 
   const handleSort = (field) => {
     if (sortField === field) {
@@ -19,6 +35,16 @@ const MeasurementHistoryTable = () => {
     }
   }
 
+  const deleteMeasurement = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/measurements/${id}`, { withCredentials: true })
+      setMeasurementHistory((prev) => prev.filter((m) => m._id !== id))
+    } catch (error) {
+      console.error("Error deleting measurement:", error)
+    }
+  }
+
+  // Sorting logic
   const sortedData = [...measurementHistory].sort((a, b) => {
     let aValue = a[sortField]
     let bValue = b[sortField]
@@ -76,25 +102,25 @@ const MeasurementHistoryTable = () => {
                   <SortIcon field="hips" />
                 </div>
               </th>
-              <th className="px-6 py-3 cursor-pointer" onClick={() => handleSort("thighs")}>
+              <th className="px-6 py-3 cursor-pointer" onClick={() => handleSort("thigh")}>
                 <div className="flex items-center space-x-1">
                   <span>Thighs (cm)</span>
-                  <SortIcon field="thighs" />
+                  <SortIcon field="thigh" />
                 </div>
               </th>
               <th className="px-6 py-3">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {sortedData.map((measurement) => (
-              <tr key={measurement.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">{formatDate(measurement.date)}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{measurement.chest.toFixed(1)}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{measurement.waist.toFixed(1)}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{measurement.hips.toFixed(1)}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{measurement.thighs.toFixed(1)}</td>
+            {sortedData.map((measurement, index) => (
+              <tr key={measurement._id || index} className="hover:bg-gray-50">
+                <td className="px-6 py-4 whitespace-nowrap">{formatDate(measurement.timestamp)}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{measurement.chest || "-"}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{measurement.waist || "-"}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{measurement.hips || "-"}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{measurement.thigh || "-"}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <button onClick={() => deleteMeasurement(measurement.id)} className="text-red-600 hover:text-red-900">
+                  <button onClick={() => deleteMeasurement(measurement._id)} className="text-red-600 hover:text-red-900">
                     <Trash2 className="h-5 w-5" />
                   </button>
                 </td>

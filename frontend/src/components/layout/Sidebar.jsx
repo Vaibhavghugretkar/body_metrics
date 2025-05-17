@@ -19,7 +19,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   const { user, logout } = useUser();
 
   const navItems = [
-    { name: "Dashboard", to: "/", icon: LayoutDashboard },
+    { name: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
     { name: "Capture", to: "/dashboard/capture", icon: Camera },
     { name: "History", to: "/dashboard/history", icon: History },
     { name: "Recommendations", to: "/dashboard/recommendations", icon: Lightbulb },
@@ -52,6 +52,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               <NavLink
                 key={item.name}
                 to={item.to}
+                end={item.to === "/dashboard"} // Only add 'end' for the Dashboard link
                 className={({ isActive }) =>
                   `flex items-center px-4 py-2 text-sm font-medium rounded-md ${
                     isActive
