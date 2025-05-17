@@ -37,8 +37,8 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
           <div className="flex items-center">
-            <span className="text-2xl font-bold samarkan-text bg-gradient-to-r from-[#ffa8b8] to-[#d888bb] text-transparent bg-clip-text">
-              Sarvastara
+            <span className="text-3xl font-bold samarkan-text-nav bg-gradient-to-r from-[#ffa8b8] to-[#d888bb] text-transparent bg-clip-text">
+              Sarvastra
             </span>
           </div>
 

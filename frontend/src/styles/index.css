@@ -10,7 +10,8 @@
 }
 
 body {
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
 }
 
 .animate-in {
@@ -24,8 +25,27 @@ body {
 }
 
 .samarkan-text {
-  font-family: 'Samarkan', sans-serif;
+  font-family: "Samarkan", sans-serif;
   font-size: 2rem;
+}
+
+.samarkan-text-nav {
+  font-family: "Samarkan", sans-serif;
+  font-size: 2.5rem;
+}
+
+/* Add these animations to your index.css file */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-in-out;
 }
 
 /* Custom scrollbar */
