@@ -70,7 +70,7 @@ const Register = () => {
         { withCredentials: true }
       );
       login(res.data.user);
-      navigate("/");
+      navigate("/dashboard");
     } catch (err) {
       setError(
         err.response?.data?.message || err.message || "Registration failed"

@@ -1,17 +1,17 @@
-import { useState } from "react"
-import { Outlet } from "react-router-dom"
-import Sidebar from "./Sidebar"
-import Header from "./Header"
-import MobileMenu from "./MobileMenu"
+import { useState } from "react";
+import { Outlet } from "react-router-dom";
+import Sidebar from "./Sidebar";
+import Header from "./Header";
+import MobileMenu from "./MobileMenu";
 
 const Layout = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
       <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-      
+
       {/* Main Content */}
       <div className="flex flex-col flex-1 ml-0 md:ml-64 overflow-hidden">
         <Header setSidebarOpen={setSidebarOpen} />
@@ -21,11 +21,11 @@ const Layout = () => {
           </div>
         </main>
       </div>
-      
+
       {/* Mobile Menu */}
       <MobileMenu open={sidebarOpen} setOpen={setSidebarOpen} />
     </div>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;
