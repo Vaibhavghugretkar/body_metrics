@@ -15,13 +15,13 @@ const Dashboard = () => {
         <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
         <div className="mt-4 sm:mt-0 flex space-x-3">
           <Button variant="outline" asChild>
-            <Link to="/history">
+            <Link to="/dashboard/history">
               <History className="mr-2 h-4 w-4" />
               View History
             </Link>
           </Button>
           <Button asChild>
-            <Link to="/capture">
+            <Link to="/dashboard/capture">
               <Camera className="mr-2 h-4 w-4" />
               New Measurement
             </Link>

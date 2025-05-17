@@ -6,12 +6,12 @@ import axios from "axios";
 
 const pantsSizeRanges = {
   S: "71-78 waist",
-  M: "79-86 waist",
-  L: "87-94 waist",
-  XL: "95-102 waist",
-  XXL: "103-110 waist",
-  XXXL: "111+ waist",
-  Unknown: "",
+  M: "79-86 waist, 96-103 hips",
+  L: "87-94 waist, 104-111 hips",
+  XL: "95-102 waist, 112-119 hips",
+  XXL: "103-110 waist, 120-127 hips",
+  XXXL: "111+ waist, 128+ hips",
+  Unknown: "Unknown size",
 };
 
 const MeasurementSummary = () => {
@@ -22,8 +22,12 @@ const MeasurementSummary = () => {
     const fetchMeasurements = async () => {
       try {
         const response = await axios.get("http://localhost:5000/api/measurements/latest", { withCredentials: true });
+        console.log("Data1", response.data);
         const latest = response.data;
+
+        console.log("Data2",latest);
         const { shirtSize, pantsSize, shoeSize } = calculateSize(latest);
+        console.log(pantsSize);
         setLatestMeasurements({ ...latest, shirtSize, pantsSize, shoeSize });
       } catch (error) {
         console.error("Error fetching latest measurements:", error);
@@ -47,10 +51,9 @@ const MeasurementSummary = () => {
             <div className="mt-1 flex items-baseline">
               <p className="text-2xl font-semibold text-gray-900">
                 {latestMeasurements?.[type.key] || "–"}
-                {/* Show range only for Pant Size */}
                 {type.key === "pantsSize" && latestMeasurements?.pantsSize && (
                   <span className="ml-2 text-sm font-normal text-gray-600">
-                    ({pantsSizeRanges[latestMeasurements.pantsSize] || ""})
+                    ({pantsSizeRanges[latestMeasurements.pantsSize] || pantsSizeRanges.Unknown})
                   </span>
                 )}
               </p>

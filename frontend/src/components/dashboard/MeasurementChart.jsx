@@ -1,14 +1,34 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import Chart from "chart.js/auto"
+import axios from "axios"
 import Card from "../ui/Card"
-import { useMeasurements } from "../../context/MeasurementContext"
 
 const MeasurementChart = () => {
   const chartRef = useRef(null)
   const chartInstance = useRef(null)
-  const { measurementHistory } = useMeasurements()
+  const [measurementHistory, setMeasurementHistory] = useState([])
+
+  // Fetch measurement data from the API
+  useEffect(() => {
+    const fetchMeasurements = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/api/measurements/", {
+          withCredentials: true,
+        })
+        
+        // Check if response contains measurements and is an array
+        const data = Array.isArray(response.data.measurements) ? response.data.measurements : []
+        setMeasurementHistory(data)
+        console.log("Fetched measurement data:", data)
+      } catch (error) {
+        console.error("Error fetching measurement data:", error)
+      }
+    }
+
+    fetchMeasurements()
+  }, [])
 
   useEffect(() => {
     if (chartInstance.current) {
@@ -17,16 +37,20 @@ const MeasurementChart = () => {
 
     const ctx = chartRef.current.getContext("2d")
 
-    // Filter out invalid measurements
-    const validHistory = Array.isArray(measurementHistory)
-      ? measurementHistory.filter(m => m && m.date)
-      : []
+    // Generate dates from the measurement timestamps
+    const dates = measurementHistory.map((m) =>
+      new Date(m.timestamp).toLocaleDateString()
+    )
 
-    // Extract dates and measurements
-    const dates = validHistory.map((m) => new Date(m.date).toLocaleDateString())
-    const chestData = validHistory.map((m) => m.chest)
-    const waistData = validHistory.map((m) => m.waist)
-    const hipsData = validHistory.map((m) => m.hips)
+    // Extract body metrics and ensure valid data
+    const chestData = measurementHistory.map((m) => m.chest || 0)
+    const waistData = measurementHistory.map((m) => m.waist || 0)
+    const hipsData = measurementHistory.map((m) => m.hips || 0)
+
+    // Calculate min and max for the Y-axis
+    const allValues = [...chestData, ...waistData, ...hipsData].filter((v) => v > 0)
+    const yMin = allValues.length ? Math.min(...allValues) * 0.9 : 70
+    const yMax = allValues.length ? Math.max(...allValues) * 1.1 : 100
 
     chartInstance.current = new Chart(ctx, {
       type: "line",
@@ -39,6 +63,9 @@ const MeasurementChart = () => {
             borderColor: "#ffa8b8",
             backgroundColor: "rgba(255, 168, 184, 0.1)",
             tension: 0.4,
+            pointStyle: "circle",
+            pointRadius: 4,
+            pointBackgroundColor: "#ffa8b8",
           },
           {
             label: "Waist",
@@ -46,6 +73,9 @@ const MeasurementChart = () => {
             borderColor: "#fed2a5",
             backgroundColor: "rgba(254, 210, 165, 0.1)",
             tension: 0.4,
+            pointStyle: "circle",
+            pointRadius: 4,
+            pointBackgroundColor: "#fed2a5",
           },
           {
             label: "Hips",
@@ -53,6 +83,9 @@ const MeasurementChart = () => {
             borderColor: "#d888bb",
             backgroundColor: "rgba(216, 136, 187, 0.1)",
             tension: 0.4,
+            pointStyle: "circle",
+            pointRadius: 4,
+            pointBackgroundColor: "#d888bb",
           },
         ],
       },
@@ -68,12 +101,23 @@ const MeasurementChart = () => {
           },
         },
         scales: {
+          x: {
+            title: {
+              display: true,
+              text: "Date (daily)",
+            },
+          },
           y: {
             title: {
               display: true,
-              text: "Measurement (cm)",
+              text: "Body Metrics (cm)",
             },
-            min: Math.min(...[...chestData, ...waistData, ...hipsData].filter(v => typeof v === "number")) * 0.9,
+            beginAtZero: false,
+            min: yMin,
+            max: yMax,
+            ticks: {
+              stepSize: 5,
+            },
           },
         },
       },
