@@ -22,16 +22,14 @@ export const signup = async (req, res) => {
       sameSite: "lax",
       maxAge: 604800000,
     });
-    res
-      .status(201)
-      .json({
-        user: {
-          id: user._id,
-          username: user.username,
-          email: user.email,
-          gender: user.gender,
-        },
-      });
+    res.status(201).json({
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        gender: user.gender,
+      },
+    });
   } catch (err) {
     res.status(500).json({ message: "Signup failed", error: err.message });
   }
@@ -51,16 +49,14 @@ export const login = async (req, res) => {
       sameSite: "lax",
       maxAge: 604800000,
     });
-    res
-      .status(200)
-      .json({
-        user: {
-          id: user._id,
-          username: user.username,
-          email: user.email,
-          gender: user.gender,
-        },
-      });
+    res.status(200).json({
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        gender: user.gender,
+      },
+    });
   } catch (err) {
     res.status(500).json({ message: "Login failed", error: err.message });
   }
@@ -75,4 +71,13 @@ export const getProfile = async (req, res) => {
       .status(500)
       .json({ message: "Failed to fetch profile", error: err.message });
   }
+};
+
+export const logout = (req, res) => {
+  res.cookie("token", "", {
+    httpOnly: true,
+    sameSite: "lax",
+    expires: new Date(0),
+  });
+  res.status(200).json({ message: "Logged out successfully" });
 };
