@@ -11,13 +11,12 @@ const Profile = () => {
   const navigate = useNavigate()
   const { user, updateUser } = useUser()
   const [formData, setFormData] = useState({
-    name: user?.name || "",
+    name: user?.username || "",
     email: user?.email || "",
     gender: user?.gender || "",
     age: user?.age || "",
-    height: user?.height || "",
+    height: user?.measurements?.height || "",
     weight: user?.weight || "",
-    fitnessGoal: user?.fitnessGoal || "",
   })
 
   const handleChange = (e) => {
@@ -140,25 +139,7 @@ const Profile = () => {
                   className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#d888bb] focus:border-transparent"
                 />
               </div>
-              <div className="md:col-span-2">
-                <label htmlFor="fitnessGoal" className="block text-sm font-medium text-gray-700 mb-1">
-                  Fitness Goal
-                </label>
-                <select
-                  id="fitnessGoal"
-                  name="fitnessGoal"
-                  value={formData.fitnessGoal}
-                  onChange={handleChange}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#d888bb] focus:border-transparent"
-                >
-                  <option value="">Select your primary goal</option>
-                  <option value="weight-loss">Weight Loss</option>
-                  <option value="muscle-gain">Muscle Gain</option>
-                  <option value="maintenance">Maintenance</option>
-                  <option value="general-fitness">General Fitness</option>
-                  <option value="athletic-performance">Athletic Performance</option>
-                </select>
-              </div>
+              
             </div>
           </Card.Body>
           <Card.Footer>
