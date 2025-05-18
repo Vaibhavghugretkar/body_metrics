@@ -1,11 +1,13 @@
 "use client"
 import { NavLink } from "react-router-dom"
-import { LayoutDashboard, Camera, History, Lightbulb, User, Settings, LogOut } from "lucide-react"
+import { LayoutDashboard, Camera, History, Lightbulb, User, Settings, LogOut, Sun, Moon } from "lucide-react"
 import { useUser } from "../../context/UserContext"
+import { useTheme } from "../../context/ThemeContext"
 import Logo from "../ui/Logo"
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
-  const { user, logout } = useUser()
+  const { theme, toggleTheme } = useTheme()
+  const { logout } = useUser()
 
   const navItems = [
     { name: "Dashboard", to: "/dashboard", icon: LayoutDashboard },
@@ -45,7 +47,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
             ))}
           </nav>
         </div>
-        <div className="p-4 border-t">
+        <div className="p-4 border-t flex items-center justify-between gap-4">
           <button
             onClick={logout}
             className="flex items-center w-full px-4 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-red-100 hover:text-red-700"
@@ -53,6 +55,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
             <LogOut className="mr-3 h-5 w-5" />
             Log out
           </button>
+          <button
+              onClick={toggleTheme}
+              className="p-1 rounded-full text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#d888bb]"
+            >
+              {theme === "dark" ? <Sun className="h-6 w-6" /> : <Moon className="h-6 w-6" />}
+            </button>
         </div>
       </div>
     </aside>

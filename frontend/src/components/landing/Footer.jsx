@@ -12,8 +12,8 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           <div className="col-span-1">
-            <h3 className="text-2xl font-bold bg-gradient-to-r from-[#ffa8b8] to-[#d888bb] text-transparent bg-clip-text mb-6">
-              SizeFit AI
+            <h3 className="text-2xl samarkan-text font-bold bg-gradient-to-r from-[#ffa8b8] to-[#d888bb] text-transparent bg-clip-text mb-6">
+              Sarvastra
             </h3>
             <p className="text-gray-400 mb-6">
               Revolutionizing online apparel shopping with AI-powered body measurements.

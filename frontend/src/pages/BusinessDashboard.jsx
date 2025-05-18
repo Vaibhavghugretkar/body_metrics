@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useUser } from "../context/UserContext";
 import Sidebar from "../components/layout/SidebarBusiness";
-import { LogOut } from "lucide-react";
+import { LogOut, Clipboard, Check, AlertCircle, Plus, Trash2, Edit2, Save, Key } from "lucide-react";
 
 const HOST = import.meta.env.VITE_BACKEND_URL;
 
@@ -21,8 +21,8 @@ export default function BusinessDashboard() {
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
   const [error, setError] = useState("");
-
-  // Sidebar state for mobile (optional, can be static for desktop)
+  const [copied, setCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -37,7 +37,6 @@ export default function BusinessDashboard() {
               products: res.data.company.products,
             });
             setApiKey(res.data.company.apiKey || "");
-            // If company profile is incomplete (no name or no products), force edit mode
             if (
               !res.data.company.name ||
               !res.data.company.products ||
@@ -48,7 +47,6 @@ export default function BusinessDashboard() {
               setEditMode(false);
             }
           } else {
-            // No company profile found, force edit mode
             setEditMode(true);
           }
         })
@@ -65,13 +63,11 @@ export default function BusinessDashboard() {
       const products = prev.products.map((product, pIdx) => {
         if (pIdx !== idx) return product;
         if (typeof sizeIdx === "number") {
-          // Only update the specific size in the specific product
           const sizes = product.sizes.map((s, sIdx) =>
             sIdx === sizeIdx ? { ...s, [name]: value } : s
           );
           return { ...product, sizes };
         } else {
-          // Only update the specific product's field
           return { ...product, [name]: value };
         }
       });
@@ -105,7 +101,6 @@ export default function BusinessDashboard() {
     setForm((prev) => {
       const products = prev.products.map((product, pIdx) => {
         if (pIdx !== idx) return product;
-        // Only add one new size
         return {
           ...product,
           sizes: [
@@ -134,7 +129,6 @@ export default function BusinessDashboard() {
     });
   };
 
-  // Delete a product by index
   const handleDeleteProduct = (idx) => {
     setForm((prev) => {
       const products = prev.products.filter((_, pIdx) => pIdx !== idx);
@@ -142,7 +136,6 @@ export default function BusinessDashboard() {
     });
   };
 
-  // Delete a size from a product by product and size index
   const handleDeleteSize = (productIdx, sizeIdx) => {
     setForm((prev) => {
       const products = prev.products.map((product, pIdx) => {
@@ -182,6 +175,12 @@ export default function BusinessDashboard() {
     }
   };
 
+  const copyApiKey = () => {
+    navigator.clipboard.writeText(apiKey || company?.apiKey || "");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   if (loading)
     return (
       <div className="flex min-h-screen">
@@ -191,8 +190,9 @@ export default function BusinessDashboard() {
           allowedRoutes={["/dashboard", "/dashboard/profile"]}
         />
         <div className="flex-1 flex items-center justify-center bg-[#fff6fa]">
-          <div className="p-8 text-center text-lg text-[#d888bb] font-semibold">
-            Loading...
+          <div className="p-8 text-center">
+            <div className="inline-block w-16 h-16 border-4 border-[#d888bb] border-t-transparent rounded-full animate-spin mb-4"></div>
+            <div className="text-lg text-[#d888bb] font-semibold">Loading your dashboard...</div>
           </div>
         </div>
       </div>
@@ -207,233 +207,276 @@ export default function BusinessDashboard() {
           allowedRoutes={["/dashboard", "/dashboard/profile"]}
           onProfileEdit={() => setEditMode(true)}
         />
-        <div className="flex-1 bg-[#fff6fa]">
-          {/* <div className="flex justify-end p-6">
-            <button
-              onClick={logout}
-              className="flex items-center gap-2 bg-[#ffa8b8] hover:bg-[#d888bb] text-white px-4 py-2 rounded shadow"
-            >
-              <LogOut className="h-5 w-5" /> Logout
-            </button>
-          </div> */}
-          <div className="max-w-3xl mx-auto p-8 bg-white rounded-xl shadow-lg mt-8 border border-[#ffd6e3]">
-            <h2 className="text-3xl font-bold mb-6 text-[#d888bb]">
-              Business Profile Setup
-            </h2>
-            {error && <div className="mb-4 text-red-600">{error}</div>}
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label className="block font-medium mb-1 text-[#d888bb]">
-                  Company Name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={form.name}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, name: e.target.value }))
-                  }
-                  className="w-full border border-[#ffd6e3] rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#ffa8b8]"
-                  required
-                />
+        <div className="flex-1 bg-[#fff6fa] overflow-auto">
+          <div className="max-w-4xl mx-auto p-4 md:p-6 lg:p-8">
+            <div className="bg-white rounded-xl shadow-lg border border-[#ffd6e3] overflow-hidden transition-all duration-300 hover:shadow-xl">
+              <div className="bg-gradient-to-r from-[#ffa8b8] to-[#d888bb] p-4 md:p-6">
+                <h2 className="text-2xl md:text-3xl font-bold text-white flex items-center">
+                  <Edit2 className="w-6 h-6 mr-2" /> 
+                  Business Profile Setup
+                </h2>
+                <p className="text-white/80 text-sm mt-1">
+                  Configure your business profile and product sizing information
+                </p>
               </div>
-              {form.products.map((product, idx) => (
-                <div
-                  key={idx}
-                  className="border border-[#ffd6e3] p-4 rounded-lg mb-4 bg-[#fffafd]"
-                >
-                  <div className="flex justify-between items-center mb-2">
-                    <label className="block font-medium text-[#d888bb]">
-                      Product Category
-                    </label>
-                    {form.products.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteProduct(idx)}
-                        className="text-xs text-red-500 hover:underline"
-                      >
-                        Delete Product
-                      </button>
-                    )}
+              
+              <div className="p-4 md:p-6 lg:p-8">
+                {error && (
+                  <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 flex items-center">
+                    <AlertCircle className="w-5 h-5 mr-2 flex-shrink-0" />
+                    <span>{error}</span>
                   </div>
-                  <select
-                    name="category"
-                    value={product.category}
-                    onChange={(e) => handleFormChange(e, idx)}
-                    className="w-full border border-[#ffd6e3] rounded px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-[#ffa8b8]"
-                  >
-                    <option value="Shirt">Shirt</option>
-                    <option value="T-Shirt">T-Shirt</option>
-                    <option value="Pant">Pant</option>
-                    <option value="Shoe">Shoe</option>
-                  </select>
-                  {product.sizes.map((size, sizeIdx) => (
-                    <div
-                      key={sizeIdx}
-                      className="flex flex-wrap gap-2 mb-2 items-center"
-                    >
-                      {/* Standard size label/input for each product */}
-                      {product.category === "Shoe" ? (
-                        <>
-                          <label className="text-xs w-20">Shoe Size (UK)</label>
-                          <input
-                            type="number"
-                            name="size"
-                            value={size.size}
-                            onChange={(e) => handleFormChange(e, idx, sizeIdx)}
-                            placeholder="UK Size (e.g. 8)"
-                            className="border border-[#ffd6e3] rounded px-2 py-1 w-24 focus:outline-none focus:ring-2 focus:ring-[#ffa8b8]"
-                            step="0.5"
-                            min="0"
-                            required
-                          />
-                          <label className="text-xs w-24">Height (cm)</label>
-                          <input
-                            type="number"
-                            name="height"
-                            value={size.height || ""}
-                            onChange={(e) => handleFormChange(e, idx, sizeIdx)}
-                            placeholder="Height in cm"
-                            className="border border-[#ffd6e3] rounded px-2 py-1 w-24 focus:outline-none focus:ring-2 focus:ring-[#ffa8b8]"
-                            step="0.1"
-                            min="0"
-                          />
-                        </>
-                      ) : product.category === "Pant" ? (
-                        <>
-                          <label className="text-xs w-24">
-                            Pant Size (e.g. 30, 32, 34)
-                          </label>
-                          <input
-                            type="number"
-                            name="size"
-                            value={size.size}
-                            onChange={(e) => handleFormChange(e, idx, sizeIdx)}
-                            placeholder="Pant Size (e.g. 30, 32, 34)"
-                            className="border border-[#ffd6e3] rounded px-2 py-1 w-24 focus:outline-none focus:ring-2 focus:ring-[#ffa8b8]"
-                            step="1"
-                            min="24"
-                            max="60"
-                            required
-                          />
-                        </>
-                      ) : (
-                        <>
-                          <label className="text-xs w-16">
-                            Size (e.g. S/M/L/XL)
-                          </label>
-                          <input
-                            type="text"
-                            name="size"
-                            value={size.size}
-                            onChange={(e) => handleFormChange(e, idx, sizeIdx)}
-                            placeholder="S, M, L, XL, etc."
-                            className="border border-[#ffd6e3] rounded px-2 py-1 w-20 focus:outline-none focus:ring-2 focus:ring-[#ffa8b8]"
-                            required
-                          />
-                        </>
-                      )}
-                      {/* Shirt/T-Shirt: Chest, Length */}
-                      {(product.category === "Shirt" ||
-                        product.category === "T-Shirt") && (
-                        <>
-                          <label className="text-xs w-16">Chest (cm)</label>
-                          <input
-                            type="number"
-                            name="chest"
-                            value={size.chest || ""}
-                            onChange={(e) => handleFormChange(e, idx, sizeIdx)}
-                            placeholder="Chest in cm"
-                            className="border border-[#ffd6e3] rounded px-2 py-1 w-20 focus:outline-none focus:ring-2 focus:ring-[#ffa8b8]"
-                            step="0.1"
-                            min="0"
-                          />
-                          <label className="text-xs w-16">Length (cm)</label>
-                          <input
-                            type="number"
-                            name="length"
-                            value={size.length || ""}
-                            onChange={(e) => handleFormChange(e, idx, sizeIdx)}
-                            placeholder="Length in cm"
-                            className="border border-[#ffd6e3] rounded px-2 py-1 w-20 focus:outline-none focus:ring-2 focus:ring-[#ffa8b8]"
-                            step="0.1"
-                            min="0"
-                          />
-                        </>
-                      )}
-                      {/* Pant: Waist, Hip, Length */}
-                      {product.category === "Pant" && (
-                        <>
-                          <label className="text-xs w-16">Waist (cm)</label>
-                          <input
-                            type="number"
-                            name="waist"
-                            value={size.waist || ""}
-                            onChange={(e) => handleFormChange(e, idx, sizeIdx)}
-                            placeholder="Waist in cm"
-                            className="border border-[#ffd6e3] rounded px-2 py-1 w-20 focus:outline-none focus:ring-2 focus:ring-[#ffa8b8]"
-                            step="0.1"
-                            min="0"
-                          />
-                          <label className="text-xs w-16">Hip (cm)</label>
-                          <input
-                            type="number"
-                            name="hip"
-                            value={size.hip || ""}
-                            onChange={(e) => handleFormChange(e, idx, sizeIdx)}
-                            placeholder="Hip in cm"
-                            className="border border-[#ffd6e3] rounded px-2 py-1 w-20 focus:outline-none focus:ring-2 focus:ring-[#ffa8b8]"
-                            step="0.1"
-                            min="0"
-                          />
-                          <label className="text-xs w-16">Length (cm)</label>
-                          <input
-                            type="number"
-                            name="length"
-                            value={size.length || ""}
-                            onChange={(e) => handleFormChange(e, idx, sizeIdx)}
-                            placeholder="Length in cm"
-                            className="border border-[#ffd6e3] rounded px-2 py-1 w-20 focus:outline-none focus:ring-2 focus:ring-[#ffa8b8]"
-                            step="0.1"
-                            min="0"
-                          />
-                        </>
-                      )}
+                )}
+                
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="bg-[#fffafd] p-4 rounded-lg border border-[#ffd6e3]">
+                    <label className="block font-medium mb-2 text-[#d888bb]">
+                      Company Name
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={form.name}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, name: e.target.value }))
+                      }
+                      className="w-full border border-[#ffd6e3] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#FFC107] transition-all duration-200"
+                      placeholder="Enter your company name"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold text-[#d888bb]">Products</h3>
                       <button
                         type="button"
-                        onClick={() => handleDeleteSize(idx, sizeIdx)}
-                        className="text-xs text-red-500 ml-2"
-                        disabled={product.sizes.length === 1}
+                        onClick={handleAddProduct}
+                        className="flex items-center text-sm bg-[#FFC107] hover:bg-[#FFB000] text-white px-3 py-1.5 rounded-full shadow transition-all duration-200 transform hover:scale-105"
                       >
-                        Delete Size
+                        <Plus className="w-4 h-4 mr-1" /> Add Product
                       </button>
                     </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() => handleAddSize(idx)}
-                    className="text-xs text-[#d888bb] mt-1 hover:underline"
-                  >
-                    + Add Size
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={handleAddProduct}
-                className="text-xs text-[#d888bb] hover:underline"
-              >
-                + Add Product
-              </button>
-              <div className="pt-4">
-                <button
-                  type="submit"
-                  className="bg-gradient-to-r from-[#ffa8b8] to-[#d888bb] text-white px-8 py-2 rounded shadow hover:scale-105 transition-transform"
-                >
-                  Save Profile
-                </button>
+                    
+                    {form.products.map((product, idx) => (
+                      <div
+                        key={idx}
+                        className="border border-[#ffd6e3] p-4 md:p-5 rounded-lg bg-[#fffafd] transition-all duration-300 hover:shadow-md"
+                      >
+                        <div className="flex flex-wrap justify-between items-center mb-4 gap-2">
+                          <div className="flex-1">
+                            <label className="block font-medium text-[#d888bb] mb-1.5">
+                              Product Category
+                            </label>
+                            <select
+                              name="category"
+                              value={product.category}
+                              onChange={(e) => handleFormChange(e, idx)}
+                              className="w-full border border-[#ffd6e3] rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#FFC107] transition-all duration-200"
+                            >
+                              <option value="Shirt">Shirt</option>
+                              <option value="T-Shirt">T-Shirt</option>
+                              <option value="Pant">Pant</option>
+                              <option value="Shoe">Shoe</option>
+                            </select>
+                          </div>
+                          
+                          {form.products.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteProduct(idx)}
+                              className="text-red-500 hover:text-red-700 flex items-center px-2 py-1 rounded hover:bg-red-50 transition-colors duration-200"
+                            >
+                              <Trash2 className="w-4 h-4 mr-1" /> Delete
+                            </button>
+                          )}
+                        </div>
+                        
+                        <div className="mb-3 pb-2 border-b border-[#ffd6e3]">
+                          <h4 className="text-sm font-medium text-[#d888bb] flex items-center">
+                            <span className="w-2 h-2 bg-[#FFC107] rounded-full mr-2"></span> 
+                            Size Information
+                          </h4>
+                        </div>
+                        
+                        <div className="space-y-3">
+                          {product.sizes.map((size, sizeIdx) => (
+                            <div
+                              key={sizeIdx}
+                              className="p-3 bg-white rounded-lg border border-[#ffd6e3] hover:border-[#FFC107] transition-colors duration-200"
+                            >
+                              <div className="flex justify-between items-center mb-2">
+                                <div className="text-xs font-medium text-[#d888bb]">
+                                  Size {sizeIdx + 1}
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteSize(idx, sizeIdx)}
+                                  className="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-50 transition-all"
+                                  disabled={product.sizes.length === 1}
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                              
+                              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 lg:gap-3">
+                                {/* Size input for each product type */}
+                                {product.category === "Shoe" ? (
+                                  <>
+                                    <div>
+                                      <label className="text-xs block mb-1">Shoe Size (UK)</label>
+                                      <input
+                                        type="number"
+                                        name="size"
+                                        value={size.size}
+                                        onChange={(e) => handleFormChange(e, idx, sizeIdx)}
+                                        placeholder="UK Size"
+                                        className="w-full border border-[#ffd6e3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FFC107] transition-all duration-200"
+                                        step="0.5"
+                                        min="0"
+                                        required
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-xs block mb-1">Height (cm)</label>
+                                      <input
+                                        type="number"
+                                        name="height"
+                                        value={size.height || ""}
+                                        onChange={(e) => handleFormChange(e, idx, sizeIdx)}
+                                        placeholder="Height in cm"
+                                        className="w-full border border-[#ffd6e3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FFC107] transition-all duration-200"
+                                        step="0.1"
+                                        min="0"
+                                      />
+                                    </div>
+                                  </>
+                                ) : product.category === "Pant" ? (
+                                  <>
+                                    <div>
+                                      <label className="text-xs block mb-1">Pant Size</label>
+                                      <input
+                                        type="number"
+                                        name="size"
+                                        value={size.size}
+                                        onChange={(e) => handleFormChange(e, idx, sizeIdx)}
+                                        placeholder="30, 32, 34..."
+                                        className="w-full border border-[#ffd6e3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FFC107] transition-all duration-200"
+                                        step="1"
+                                        min="24"
+                                        max="60"
+                                        required
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-xs block mb-1">Waist (cm)</label>
+                                      <input
+                                        type="number"
+                                        name="waist"
+                                        value={size.waist || ""}
+                                        onChange={(e) => handleFormChange(e, idx, sizeIdx)}
+                                        placeholder="Waist in cm"
+                                        className="w-full border border-[#ffd6e3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FFC107] transition-all duration-200"
+                                        step="0.1"
+                                        min="0"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-xs block mb-1">Hip (cm)</label>
+                                      <input
+                                        type="number"
+                                        name="hip"
+                                        value={size.hip || ""}
+                                        onChange={(e) => handleFormChange(e, idx, sizeIdx)}
+                                        placeholder="Hip in cm"
+                                        className="w-full border border-[#ffd6e3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FFC107] transition-all duration-200"
+                                        step="0.1"
+                                        min="0"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-xs block mb-1">Length (cm)</label>
+                                      <input
+                                        type="number"
+                                        name="length"
+                                        value={size.length || ""}
+                                        onChange={(e) => handleFormChange(e, idx, sizeIdx)}
+                                        placeholder="Length in cm"
+                                        className="w-full border border-[#ffd6e3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FFC107] transition-all duration-200"
+                                        step="0.1"
+                                        min="0"
+                                      />
+                                    </div>
+                                  </>
+                                ) : (
+                                  <>
+                                    <div>
+                                      <label className="text-xs block mb-1">Size</label>
+                                      <input
+                                        type="text"
+                                        name="size"
+                                        value={size.size}
+                                        onChange={(e) => handleFormChange(e, idx, sizeIdx)}
+                                        placeholder="S, M, L, XL..."
+                                        className="w-full border border-[#ffd6e3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FFC107] transition-all duration-200"
+                                        required
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-xs block mb-1">Chest (cm)</label>
+                                      <input
+                                        type="number"
+                                        name="chest"
+                                        value={size.chest || ""}
+                                        onChange={(e) => handleFormChange(e, idx, sizeIdx)}
+                                        placeholder="Chest in cm"
+                                        className="w-full border border-[#ffd6e3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FFC107] transition-all duration-200"
+                                        step="0.1"
+                                        min="0"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="text-xs block mb-1">Length (cm)</label>
+                                      <input
+                                        type="number"
+                                        name="length"
+                                        value={size.length || ""}
+                                        onChange={(e) => handleFormChange(e, idx, sizeIdx)}
+                                        placeholder="Length in cm"
+                                        className="w-full border border-[#ffd6e3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FFC107] transition-all duration-200"
+                                        step="0.1"
+                                        min="0"
+                                      />
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                          
+                          <button
+                            type="button"
+                            onClick={() => handleAddSize(idx)}
+                            className="w-full py-2 border border-dashed border-[#ffd6e3] rounded-lg text-[#d888bb] hover:border-[#FFC107] hover:bg-[#FFC107]/5 transition-all duration-200 text-sm"
+                          >
+                            <Plus className="w-4 h-4 inline-block mr-1" /> Add Size
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="flex justify-end pt-4">
+                    <button
+                      type="submit"
+                      className="flex items-center bg-gradient-to-r from-[#ffa8b8] to-[#d888bb] text-white px-6 py-3 rounded-lg shadow hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02]"
+                    >
+                      <Save className="w-5 h-5 mr-2" /> Save Profile
+                    </button>
+                  </div>
+                </form>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       </div>
@@ -449,74 +492,235 @@ export default function BusinessDashboard() {
         allowedRoutes={["/dashboard", "/dashboard/profile"]}
         onProfileEdit={() => setEditMode(true)}
       />
-      <div className="flex-1 bg-[#fff6fa]">
-        {/* <div className="flex justify-end p-6">
-          <button
-            onClick={logout}
-            className="flex items-center gap-2 bg-[#ffa8b8] hover:bg-[#d888bb] text-white px-4 py-2 rounded shadow"
-          >
-            <LogOut className="h-5 w-5" /> Logout
-          </button>
-        </div> */}
-        <div className="max-w-3xl mx-auto p-8 bg-white rounded-xl shadow-lg mt-8 border border-[#ffd6e3]">
-          <h2 className="text-3xl font-bold mb-6 text-[#d888bb]">
-            Business Dashboard
-          </h2>
-          <div className="mb-6">
-            <div className="font-medium text-[#d888bb]">Company Name:</div>
-            <div className="text-lg font-semibold">{company.name}</div>
-          </div>
-          <div className="mb-6">
-            <div className="font-medium text-[#d888bb]">Products:</div>
-            {company.products.map((product, idx) => (
-              <div key={idx} className="mb-2">
-                <div className="font-semibold text-[#ffa8b8]">
-                  {product.category}
+      <div className="flex-1 bg-[#fff6fa] overflow-auto">
+        <div className="max-w-4xl mx-auto p-4 md:p-6 lg:p-8">
+          <div className="bg-white rounded-xl shadow-lg border border-[#ffd6e3] overflow-hidden transition-all duration-300 hover:shadow-xl">
+            <div className="bg-gradient-to-r from-[#ffa8b8] to-[#d888bb] p-4 md:p-6">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                <div>
+                  <h2 className="text-2xl md:text-3xl font-bold text-white">
+                    Business Dashboard
+                  </h2>
+                  <p className="text-white/80 text-sm mt-1">
+                    Welcome to your business control center
+                  </p>
                 </div>
-                {product.sizes.map((size, sidx) => (
-                  <div key={sidx} className="text-sm ml-4 text-gray-700">
-                    {product.category === "Shirt" ||
-                    product.category === "T-Shirt" ? (
-                      <>
-                        Size: {size.size}, Chest: {size.chest} cm, Length:{" "}
-                        {size.length} cm
-                      </>
-                    ) : product.category === "Pant" ? (
-                      <>
-                        Pant Size: {size.size}, Waist: {size.waist} cm, Hip:{" "}
-                        {size.hip} cm, Length: {size.length} cm
-                      </>
-                    ) : product.category === "Shoe" ? (
-                      <>
-                        Shoe Size (UK): {size.size}, Height (cm): {size.height}
-                      </>
-                    ) : null}
-                  </div>
-                ))}
+                {/* <div className="mt-4 md:mt-0">
+                  <button
+                    onClick={() => setEditMode(true)}
+                    className="flex items-center bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-all duration-200"
+                  >
+                    <Edit2 className="w-4 h-4 mr-2" /> Edit Profile
+                  </button>
+                </div> */}
               </div>
-            ))}
-          </div>
-          <div className="mb-6">
-            <div className="font-medium text-[#d888bb]">API Key:</div>
-            <div className="flex items-center gap-2 mt-1">
-              <span className="bg-gray-100 px-2 py-1 rounded text-xs select-all border border-[#ffd6e3]">
-                {apiKey || company.apiKey || "Not generated yet"}
-              </span>
-              <button
-                onClick={handleGenerateApiKey}
-                className="bg-gradient-to-r from-[#ffa8b8] to-[#d888bb] text-white px-3 py-1 rounded text-xs shadow hover:scale-105 transition-transform"
-              >
-                Generate API Key
-              </button>
+            </div>
+            
+            <div className="p-0">
+              <div className="flex border-b border-[#ffd6e3]">
+                <button
+                  onClick={() => setActiveTab("overview")}
+                  className={`flex-1 py-3 px-4 text-center font-medium transition-all ${
+                    activeTab === "overview"
+                      ? "border-b-2 border-[#FFC107] text-[#d888bb]"
+                      : "text-gray-500 hover:text-[#d888bb]"
+                  }`}
+                >
+                  Overview
+                </button>
+                <button
+                  onClick={() => setActiveTab("products")}
+                  className={`flex-1 py-3 px-4 text-center font-medium transition-all ${
+                    activeTab === "products"
+                      ? "border-b-2 border-[#FFC107] text-[#d888bb]"
+                      : "text-gray-500 hover:text-[#d888bb]"
+                  }`}
+                >
+                  Products
+                </button>
+                <button
+                  onClick={() => setActiveTab("api")}
+                  className={`flex-1 py-3 px-4 text-center font-medium transition-all ${
+                    activeTab === "api"
+                      ? "border-b-2 border-[#FFC107] text-[#d888bb]"
+                      : "text-gray-500 hover:text-[#d888bb]"
+                  }`}
+                >
+                  API Access
+                </button>
+              </div>
+              
+              <div className="p-4 md:p-6 lg:p-8">
+                {activeTab === "overview" && (
+                  <div className="space-y-6">
+                    <div className="p-5 bg-[#fffafd] rounded-xl border border-[#ffd6e3]">
+                      <div className="flex items-center mb-4">
+                        <div className="w-10 h-10 bg-[#FFC107] rounded-full flex items-center justify-center mr-3">
+                          <span className="text-white font-bold">
+                            {company.name?.charAt(0) || "C"}
+                          </span>
+                        </div>
+                        <div>
+                          <h3 className="font-medium text-[#d888bb] text-sm">Company Name</h3>
+                          <div className="text-xl font-semibold">{company.name}</div>
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+                        <div className="bg-white p-4 rounded-lg border border-[#ffd6e3] hover:border-[#FFC107] transition-colors duration-200">
+                          <div className="text-sm font-medium text-[#d888bb] mb-2">Total Products</div>
+                          <div className="text-2xl font-bold">{company.products?.length || 0}</div>
+                        </div>
+                        <div className="bg-white p-4 rounded-lg border border-[#ffd6e3] hover:border-[#FFC107] transition-colors duration-200">
+                          <div className="text-sm font-medium text-[#d888bb] mb-2">Total Sizes</div>
+                          <div className="text-2xl font-bold">
+                            {company.products?.reduce((acc, product) => acc + product.sizes.length, 0) || 0}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="p-5 bg-[#fffafd] rounded-xl border border-[#ffd6e3]">
+                      <h3 className="font-medium text-[#d888bb] mb-3">Recent Activity</h3>
+                      <div className="py-8 text-center text-gray-500">
+                        <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-3">
+                          <AlertCircle className="w-8 h-8 text-gray-400" />
+                        </div>
+                        <p>No recent activity to display</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {activeTab === "products" && (
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-medium text-[#d888bb] text-lg">Your Products</h3>
+                      <button
+                        onClick={() => setEditMode(true)}
+                        className="text-xs bg-[#FFC107] hover:bg-[#FFB000] text-white px-3 py-1.5 rounded-full shadow transition-all duration-200"
+                      >
+                        Manage Products
+                      </button>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {company.products.map((product, idx) => (
+                        <div
+                          key={idx}
+                          className="bg-white p-4 rounded-lg border border-[#ffd6e3] hover:shadow-md transition-all duration-300"
+                        >
+                          <div className="flex items-center mb-3">
+                            <div className="w-8 h-8 bg-[#FFC107]/20 rounded-full flex items-center justify-center mr-2">
+                              <span className="text-[#FFC107] font-bold text-sm">{idx + 1}</span>
+                            </div>
+                            <h4 className="font-semibold text-[#ffa8b8]">{product.category}</h4>
+                          </div>
+                          
+                          <div className="ml-4 space-y-1.5">
+                            {product.sizes.map((size, sidx) => (
+                              <div key={sidx} className="text-sm text-gray-700 bg-[#fffafd] p-2 rounded border border-[#ffd6e3]/50">
+                                {product.category === "Shirt" || product.category === "T-Shirt" ? (
+                                  <div className="flex flex-wrap gap-x-3">
+                                    <span className="font-medium text-xs text-[#d888bb]">Size: {size.size}</span>
+                                    {size.chest && <span>Chest: {size.chest} cm</span>}
+                                    {size.length && <span>Length: {size.length} cm</span>}
+                                  </div>
+                                ) : product.category === "Pant" ? (
+                                  <div className="flex flex-wrap gap-x-3">
+                                    <span className="font-medium text-xs text-[#d888bb]">Size: {size.size}</span>
+                                    {size.waist && <span>Waist: {size.waist} cm</span>}
+                                    {size.hip && <span>Hip: {size.hip} cm</span>}
+                                    {size.length && <span>Length: {size.length} cm</span>}
+                                  </div>
+                                ) : product.category === "Shoe" ? (
+                                  <div className="flex flex-wrap gap-x-3">
+                                    <span className="font-medium text-xs text-[#d888bb]">UK Size: {size.size}</span>
+                                    {size.height && <span>Height: {size.height} cm</span>}
+                                  </div>
+                                ) : null}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {activeTab === "api" && (
+                  <div className="space-y-6">
+                    <div className="p-5 bg-[#fffafd] rounded-xl border border-[#ffd6e3]">
+                      <div className="flex items-center mb-4">
+                        <div className="w-10 h-10 bg-[#FFC107] rounded-full flex items-center justify-center mr-3">
+                          <Key className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="font-medium text-[#d888bb]">API Access Key</h3>
+                          <p className="text-sm text-gray-500">Use this key to authenticate API requests</p>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-4">
+                        <div className="relative">
+                          <div className="flex">
+                            <input
+                              type="text"
+                              value={apiKey || company.apiKey || "Not generated yet"}
+                              readOnly
+                              className="flex-1 bg-gray-50 border border-[#ffd6e3] rounded-l-lg px-4 py-3 font-mono text-sm"
+                            />
+                            <button
+                              onClick={copyApiKey}
+                              className={`px-4 rounded-r-lg flex items-center justify-center ${
+                                copied
+                                  ? "bg-green-500 text-white"
+                                  : "bg-[#FFC107] text-white"
+                              } transition-colors duration-300`}
+                            >
+                              {copied ? (
+                                <Check className="h-5 w-5" />
+                              ) : (
+                                <Clipboard className="h-5 w-5" />
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center mt-4">
+                          <button
+                            onClick={handleGenerateApiKey}
+                            className="bg-gradient-to-r from-[#ffa8b8] to-[#d888bb] text-white px-4 py-2 rounded-lg text-sm shadow hover:shadow-md transition-all duration-300"
+                          >
+                            Generate New API Key
+                          </button>
+                          <div className="ml-3 text-xs text-gray-500">
+                            {copied && "Copied to clipboard!"}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="p-5 bg-[#fffafd] rounded-xl border border-[#ffd6e3]">
+                      <h3 className="font-medium text-[#d888bb] mb-3">API Documentation</h3>
+                      <p className="text-sm text-gray-600 mb-3">
+                        Learn how to integrate with our API to access your sizing data programmatically.
+                      </p>
+                      <div className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                        <code className="text-xs font-mono block">
+                          GET /api/company/predict
+                          <br />
+                          Headers: &#123; "x-api-key": "{apiKey || '[YOUR_API_KEY]'}" &#125;
+                          <br />
+                          Body (Files): image: [your_image_file] 
+                        </code>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-          {/* Remove Edit Profile button at the end */}
-          {/* <button
-            onClick={() => setEditMode(true)}
-            className="text-[#d888bb] underline text-sm hover:text-[#ffa8b8]"
-          >
-            Edit Profile
-          </button> */}
         </div>
       </div>
     </div>

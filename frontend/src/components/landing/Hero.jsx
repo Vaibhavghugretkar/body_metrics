@@ -85,7 +85,7 @@ const Hero = () => {
               </div>
 
               {/* Trust indicators */}
-              <div
+              {/* <div
                 className="flex items-center space-x-4 mt-8 text-sm text-gray-500 animate-fadeIn"
                 style={{ animationDelay: "0.5s" }}
               >
@@ -97,7 +97,7 @@ const Hero = () => {
                   <div className="w-4 h-4 rounded-full bg-blue-400 mr-2"></div>
                   <span>GDPR Compliant</span>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
           <div className="md:w-1/2 relative flex items-center z-20 justify-center">

@@ -14,16 +14,16 @@ const Dashboard = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
         <div className="mt-4 sm:mt-0 flex space-x-3">
-          <Button variant="outline" asChild>
+          <Button variant="outline" asChild className="flex flex-row items-center gap-2">
             <Link to="/dashboard/history">
-              <History className="mr-2 h-4 w-4" />
-              View History
+              {/* <History className="h-4 w-4" /> */}
+              <span>View History</span>
             </Link>
           </Button>
-          <Button asChild>
+          <Button asChild className="flex flex-row items-center gap-2">
             <Link to="/dashboard/capture">
-              <Camera className="mr-2 h-4 w-4" />
-              New Measurement
+              {/* <Camera className="h-4 w-4" /> */}
+              <span>New Measurement</span>
             </Link>
           </Button>
         </div>

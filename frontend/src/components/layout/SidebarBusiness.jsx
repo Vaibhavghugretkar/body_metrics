@@ -2,11 +2,7 @@
 import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
-  Camera,
-  History,
-  Lightbulb,
   User,
-  Settings,
   LogOut,
 } from "lucide-react";
 import { useUser } from "../../context/UserContext";
@@ -54,7 +50,7 @@ const Sidebar = ({
               <NavLink
                 key={item.name}
                 to={item.to}
-                end={item.to === "/dashboard"} // Only add 'end' for the Dashboard link
+                end={item.to === "/dashboard"}
                 className={({ isActive }) =>
                   `flex items-center px-4 py-2 text-sm font-medium rounded-md ${
                     isActive
