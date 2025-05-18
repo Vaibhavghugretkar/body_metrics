@@ -30,8 +30,7 @@ A Telegram bot that provides personalized clothing recommendations based on body
 4. **AI-Powered Clothing Recommendations**
    - Gender-specific clothing options
    - Personalized recommendations using Google's Gemini AI
-   - Direct shopping links to Myntra
-   - Special curated recommendations for men's T-shirts
+   - Direct shopping links
 
 ## Demo
 
@@ -44,8 +43,7 @@ The demo showcases:
 - Body measurement process
 - Size recommendations
 - AI-powered clothing suggestions
-- Special Puma T-shirt recommendations
-
+- 
 ## Technical Requirements
 
 - Python 3.8+
@@ -133,10 +131,6 @@ python telegram_bot.py
 4. Push to the branch
 5. Create a Pull Request
 
-## License
-
-[Add your license information here]
 
 ## Contact
-
-[Add your contact information here]
+Email: official.beingbhaskar@gmail.com
