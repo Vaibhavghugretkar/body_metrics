@@ -3,7 +3,7 @@
 
 ![NMIT Hacks Logo](https://nmithacks.com/assets/nh_landing_svg-B_uFqCIp.webp)
 
-# Sarvastra AI: An AI-Powered Body Measurement & Virtual Try-On Platform
+# Sarvastra: An AI-Powered Body Measurement & Virtual Try-On Platform
 
 ## Overview
 
