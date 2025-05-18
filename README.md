@@ -1,1 +1,223 @@
-this is body metrics app
+
+# NMIT HACKS-2025 - AIML - TEAM SARVASVA
+
+![NMIT Hacks Logo](https://nmithacks.com/assets/nh_landing_svg-B_uFqCIp.webp)
+
+# Sarvastra AI: An AI-Powered Body Measurement & Virtual Try-On Platform
+
+## Overview
+
+Sarvastra AI is an innovative platform that leverages advanced machine learning, computer vision, and AR technologies to deliver fast, accurate body measurements and virtual try-on experiences. The system is designed for seamless integration across web and Telegram, making it accessible and user-friendly.
+
+## 🎥 Demo
+
+<div align="center">
+  <h3>📱 Web Interface Demo</h3>
+  <a href="https://youtu.be/E2trJlwhTy8">
+    <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg" alt="Web Interface Demo" width="560" height="315">
+  </a>
+  
+  <h3>🤖 Telegram Bot Demo</h3>https://youtu.be/muZa_tBumNU
+  <a href="https://youtu.be/muZa_tBumNU">
+    <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg" alt="Telegram Bot Demo" width="560" height="315">
+  </a>
+</div>
+
+## ✨ Key Features
+
+### 1. AI Body Measurement
+- *Custom ML Model*: Utilizes a lightweight, fast custom model for body measurement
+- *Pose Estimation*: Employs OpenPose for key point detection (18-25 body, 70 face, 21 hands, 6 foot keypoints)
+- *Single-Pose Input*: Requires only one full-body image for accurate measurement
+- *Precise Measurements*: Delivers accurate measurements for:
+  - Height
+  - Chest
+  - Waist
+  - Hips
+  - Shoulder width
+  - Arm length
+  - Neck
+  - Thigh
+
+### 2. Multi-Language Telegram Bot
+- *11 Indian Languages Support*: Hindi, Bengali, Gujarati, Kannada, Malayalam, Marathi, Odia, Punjabi, Tamil, and Telugu
+- *Smart Size Recommendations*: Calculates recommended sizes for shirts, pants, and shoes based on Indian sizing standards
+- *AI-Powered Clothing Recommendations*:
+  - Gender-specific clothing options
+  - Personalized recommendations using Google's Gemini AI
+  - Direct shopping links to Myntra
+  - Special curated recommendations for men's T-shirts
+
+### 3. AR Virtual Try-On
+- *Universal Clothing Support*: Supports all kinds of upper wear clothes for both men and women
+- *Accurate Cloth Extraction*: Advanced deep learning models for precise cloth extraction and fitting
+- *Simple Interface*: Elegant and easy-to-use web application
+- *Fast Processing*: Delivers quick, realistic try-on results
+- *Result Caching*: Improved performance through caching
+- *Responsive Design*: Modern and user-friendly interface
+
+## 🔧 How It Works
+
+### Virtual Try-On Process
+
+#### 1. Input Processing
+- *User Image*: Single front-facing image of the user
+- *Clothing Images*: Front and back views of the clothing item
+- *Image Preprocessing*: Standardization and normalization of input images
+
+#### 2. Pose Estimation
+- *OpenPose Integration*: Extracts 25 key body points
+- *Keypoint Detection*: Identifies critical body landmarks for clothing alignment
+- *Pose Analysis*: Determines optimal clothing placement based on body position
+
+#### 3. Feature Extraction
+- *CLIP Model*: Extracts semantic features from both user and clothing images
+- *Transformer Blocks*: Processes spatial relationships between features
+- *Soft-Selection Mechanism*: Intelligently selects the appropriate clothing view (front/back)
+- *Feature Fusion*: Combines user appearance with clothing characteristics
+
+#### 4. Image Synthesis
+- *U-Net Architecture*: Deep learning model for image generation
+- *Multi-Stage Processing*:
+  1. User pose features integration
+  2. Clothing feature alignment
+  3. Appearance preservation
+- *AR Integration*: Generated image used for augmented reality visualization
+
+### Measurement Process
+1. *Cloth Extraction*: Uses a custom DeepLab model to extract clothing from source images
+2. *Pose Estimation*: Employs pretrained OpenPose body_25 model to locate shoulder points
+3. *Smart Blending*: Intelligently blends extracted clothing into profile images based on shoulder location
+4. *Real-time Preview*: Instantly shows how the clothing would look on the user
+
+## 🏗 Technical Architecture
+
+### Repository Structure
+- *backend/*: Node.js/Express server for API, authentication, image upload, and business logic
+- *frontend/*: Modern web frontend (Next.js, Vite, Tailwind CSS) for user interaction
+- *Telegram Bot/*: Python-based Telegram bot for chat-based measurement
+- *ML Model*: Custom model running locally on localhost:5001 for pose estimation
+
+### Technologies Used
+- *Backend*: Node.js, Express, Multer
+- *Frontend*: Next.js, Vite, Tailwind CSS, React
+- *ML Model*: 
+  - Custom DeepLab model for cloth segmentation
+  - OpenPose body_25 model for pose estimation
+- *Telegram Bot*: Python, python-telegram-bot
+- *AR Try-On*: Custom AR model for image generation
+- *APIs*: SarvamAI, Google Gemini, Measurement API
+
+## 📊 Dataset
+- *DeepFashion2 Dataset*: Used for training the cloth segmentation model
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js, Python 3.8+
+- Conda (recommended for environment management)
+- Required API Keys:
+  - Telegram Bot Token
+  - SarvamAI API Key
+  - Google Gemini API Key
+
+### Installation
+
+1. *Clone the Repository*
+bash
+git clone [repository-url]
+cd [repository-name]
+
+
+2. *Backend Setup*
+bash
+cd backend
+npm install
+npm start
+
+
+3. *Frontend Setup*
+bash
+cd frontend
+npm install
+npm run dev
+
+
+4. *Telegram Bot Setup*
+bash
+cd "Telegram Bot"
+pip install -r requirements.txt
+python bot.py
+
+
+5. *Environment Variables*
+Create a .env file with:
+
+SARVAM_API_KEY=your_sarvam_api_key
+TELEGRAM_BOT_TOKEN=your_telegram_bot_token
+GEMINI_API_KEY=your_gemini_api_key
+
+
+## 🔌 API Endpoints
+
+### Web Application
+- / - Home page
+- /upload_profile_image/ - Profile image upload
+- /upload_source_image/ - Source image upload
+- /tryon/ - Try-on interface
+- /tryon_result/ - Process try-on request
+
+### Telegram Bot Commands
+- /start - Initialize bot and select language
+- Send full-body photo for measurements
+- Select clothing type for recommendations
+
+## 🔒 Security Features
+- Secure filename handling
+- Session-based user state management
+- Restricted file access
+- Input validation
+- Error handling
+- Robust API error handling with fallbacks
+
+## 📚 References
+- DeepLab: https://github.com/tensorflow/models/tree/master/research/deeplab
+- DeepFashion2 Dataset: https://github.com/switchablenorms/DeepFashion2
+- OpenPose: https://github.com/CMU-Perceptual-Computing-Lab/openpose
+
+## 👥 Contributors
+
+<div align="center">
+  <table>
+    <tr>
+      <td align="center">
+        <a href="https://github.com/yashdivya5">
+          <img src="https://github.com/yashdivya5.png" width="100px;" alt="Yash Divya"/>
+          <br />
+          <sub><b>Yash Divya</b></sub>
+        </a>
+      </td>
+      <td align="center">
+        <a href="https://github.com/bhaskar-nie/">
+          <img src="https://github.com/bhaskar-nie.png" width="100px;" alt="Bhaskar Anand"/>
+          <br />
+          <sub><b>Bhaskar Anand</b></sub>
+        </a>
+      </td>
+      <td align="center">
+        <a href="https://github.com/rahulks01">
+          <img src="https://github.com/rahulks01.png" width="100px;" alt="Rahul Kumar Singh"/>
+          <br />
+          <sub><b>Rahul Kumar Singh</b></sub>
+        </a>
+      </td>
+      <td align="center">
+        <a href="https://github.com/Vaibhavghugretkar">
+          <img src="https://github.com/Vaibhavghugretkar.png" width="100px;" alt="Vaibhav Ghugretkar"/>
+          <br />
+          <sub><b>Vaibhav Ghugretkar</b></sub>
+        </a>
+      </td>
+    </tr>
+  </table>
+</div>
