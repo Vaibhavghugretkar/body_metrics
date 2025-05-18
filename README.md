@@ -7,7 +7,7 @@
 
 ## Overview
 
-Sarvastra AI is an innovative platform that leverages advanced machine learning, computer vision, and AR technologies to deliver fast, accurate body measurements and virtual try-on experiences. The system is designed for seamless integration across web and Telegram, making it accessible and user-friendly.
+Sarvastra is an innovative platform that leverages advanced machine learning, computer vision, and AR technologies to deliver fast, accurate body measurements and virtual try-on experiences. The system is designed for seamless integration across web and Telegram, making it accessible and user-friendly.
 
 ## 🎥 Demo
 
