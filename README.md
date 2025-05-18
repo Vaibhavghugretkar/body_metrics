@@ -94,13 +94,13 @@ Sarvastra AI is an innovative platform that leverages advanced machine learning,
 
 ### Repository Structure
 - *backend/*: Node.js/Express server for API, authentication, image upload, and business logic
-- *frontend/*: Modern web frontend (Next.js, Vite, Tailwind CSS) for user interaction
+- *frontend/*: Modern web frontend (Vite + React.js, Tailwind CSS) for user interaction
 - *Telegram Bot/*: Python-based Telegram bot for chat-based measurement
 - *ML Model*: Custom model running locally on localhost:5001 for pose estimation
 
 ### Technologies Used
 - *Backend*: Node.js, Express, Multer
-- *Frontend*: Next.js, Vite, Tailwind CSS, React
+- *Frontend*: Vite, Tailwind CSS, React.js
 - *ML Model*: 
   - Custom DeepLab model for cloth segmentation
   - OpenPose body_25 model for pose estimation
@@ -123,49 +123,44 @@ Sarvastra AI is an innovative platform that leverages advanced machine learning,
 
 ### Installation
 
-1. *Clone the Repository*
-bash
-git clone [repository-url]
-cd [repository-name]
+1. *Clone the Repository* <br>
+  `git clone https://github.com/Vaibhavghugretkar/body_metrics.git` <br>
+  `cd body-metrics`
 
 
-2. *Backend Setup*
-bash
-cd backend
-npm install
-npm start
+3. *Backend Setup* <br>
+  `cd backend` <br>
+  `npm install` <br>
+  `npm run dev`
 
 
-3. *Frontend Setup*
-bash
-cd frontend
-npm install
-npm run dev
+4. *Frontend Setup* <br>
+  `cd frontend` <br>
+  `npm install` <br>
+  `npm run dev`
 
 
-4. *Telegram Bot Setup*
-bash
-cd "Telegram Bot"
-pip install -r requirements.txt
-python bot.py
+5. *Telegram Bot Setup* <br>
+  `cd "Telegram Bot"` <br>
+  `pip install -r requirements.txt` <br>
+  `python bot.py` <br>
 
 
-5. *Environment Variables*
-Create a .env file with:
-
-SARVAM_API_KEY=your_sarvam_api_key
-TELEGRAM_BOT_TOKEN=your_telegram_bot_token
-GEMINI_API_KEY=your_gemini_api_key
+6. *Environment Variables* <br>
+  Create a .env file with: <br>
+  `SARVAM_API_KEY=your_sarvam_api_key` <br>
+  `TELEGRAM_BOT_TOKEN=your_telegram_bot_token` <br>
+  `GEMINI_API_KEY=your_gemini_api_key`
 
 
 ## 🔌 API Endpoints
 
 ### Web Application
 - / - Home page
-- /upload_profile_image/ - Profile image upload
-- /upload_source_image/ - Source image upload
-- /tryon/ - Try-on interface
-- /tryon_result/ - Process try-on request
+- /dashboard - User / Business dashboard
+- /dashboard/capture - Source image upload
+- /tryon - Try-on interface
+- /dashboard/history - Measurements history
 
 ### Telegram Bot Commands
 - /start - Initialize bot and select language
