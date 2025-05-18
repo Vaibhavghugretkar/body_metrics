@@ -95,7 +95,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-gray-800 mt-4 py-4 text-center text-gray-400 text-sm flex flex-col md:flex-row justify-between items-center">
-          <p>&copy; {new Date().getFullYear()} SizeFit AI. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Team Sarvasva. All rights reserved.</p>
           <div className="mt-4 md:mt-0">
             <span className="px-2">Made by Team Sarvasva at NMIT Hacks 2025</span>
           </div>
